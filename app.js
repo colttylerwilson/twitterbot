@@ -1,28 +1,27 @@
-var Twit = require('twit')
+var Twitter = require('twitter');
 var fs = require('fs');
+var savePath = 'save.txt';
+var tweetFile = 'tweetFile.txt';
 const readline = require('readline');
-var filePath = 'test.txt';
 var countLimit = 100;
 var titlegen = require('titlegen');
 var headlines = [];
-var savePath = 'save.txt';
+var txt = [];
 
 //-------------------------------------------
 // Information for the twitter API
 //-------------------------------------------
-var T = new Twit({
-	consumer_key:         'ZAP3GewbUCBCzYgxuUUN13wxI',
-	consumer_secret:      'OT983RL4A3YETMjPIgluPoEZUl2LAvhqzPrg8GsflYa1pTf4lS',
+var client = new Twitter({
+	consumer_key:         'uo8Ex8A6kPqQSTU9mQ4JEDCwA',
+	consumer_secret:      'eoAftf2tIevLIxizgY7ku4qwn9lkVJtC8PbppR30ye0Kp89D3S',
 	access_token:         '835704017384685569-946BgoVOlUWSNXhCmFKwNNDm2FCzwYz',
-	access_token_secret:  '5equQy78EhdnBOXWrhvtUCd6EW4Y4f7Lqfzyeg4EEDB6Z'//,
-	//timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+	access_token_secret:  '5equQy78EhdnBOXWrhvtUCd6EW4Y4f7Lqfzyeg4EEDB6Z'
 });
 
 //-------------------------------------------
-// Deletes the text file to start from scratch
+// Deletes the tweet file to start from scratch
 //-------------------------------------------
-function deleteFiles() {
-fs.unlink('test.txt', function(err) {
+fs.unlink('tweetFile.txt', function(err) {
     if(err && err.code == 'ENOENT') {
         // file doens't exist
         console.info("File doesn't exist, won't remove it.");
@@ -30,117 +29,155 @@ fs.unlink('test.txt', function(err) {
         // maybe we don't have enough permission
         console.error("Error occurred while trying to remove file");
     } else {
-        console.info(filePath + " removed.\n\n");
+        console.info(tweetFile + " removed...\n\n");
     }
 });
-}
 
 //-------------------------------------------
 // Writes tweets to a text file
 //-------------------------------------------
 function writeHeadlines() {
-	T.get('statuses/user_timeline', { screen_name: 'cnni_headlines', count: countLimit }, function(err, data, response) {
-		for(var i = 0; i < countLimit; i++) {
-			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
-				if(err) {
-					return console.log(err);
-				}
-			});
-		}
-	});
-
+	
+	function getCNN()
+	{
+		var params = {screen_name: 'newsnightnow'};
+		client.get('statuses/user_timeline', params, function(error, tweets, response) {
+			if (!error) {
+				console.log(tweets);
+			}
+			else
+				console.log('error');
+				//console.log(response);
+		});
+	}
+	
+/*
+	for(var i = 0; i < countLimit; i++) {
+				var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
+				fs.appendFile(tweetFile, plainText, function(err) {
+					if(err) {
+						return console.log(err);
+					}
+				});
+			}
+			
+			*/
+	
+	function fox(callback)
+	{
 	T.get('statuses/user_timeline', { screen_name: 'foxheadlines', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
+				callback;
 			});
 		}
 	});
-
-
+	}
+	
+	function msnbc(callback)
+	{
 	T.get('statuses/user_timeline', { screen_name: 'MSNBC', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
+				callback;
 			});
 		}
 	});
-
+	}
+	
+	function aj()
+	{
 	T.get('statuses/user_timeline', { screen_name: 'AJENews', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 			});
 		}
 	});
-
+	}
+	
+	function rt()
+	{
 	T.get('statuses/user_timeline', { screen_name: 'RT_com', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 			});
 		}
 	});
-}
-
-function writeHeadlines2()
-{
-		T.get('statuses/user_timeline', { screen_name: 'mylittlepony', count: countLimit }, function(err, data, response) {
+	}
+	
+	function mlp()
+	{
+	T.get('statuses/user_timeline', { screen_name: 'mylittlepony', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 			});
 		}
 	});
+	}
 	
+	function tt()
+	{
 	T.get('statuses/user_timeline', { screen_name: 'TeletubbiesUSA', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 			});
 		}
 	});
+	}
 	
+	function ss()
+	{
 	T.get('statuses/user_timeline', { screen_name: 'sesamestreet', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 			});
 		}
 	});
+	}
 	
+	function ds()
+	{
 	T.get('statuses/user_timeline', { screen_name: 'TheDrSeussQuote', count: countLimit }, function(err, data, response) {
 		for(var i = 0; i < countLimit; i++) {
 			var plainText = data[i].text.replace(/\bhttp\S+/ig,"") + "\n";
-			fs.appendFile(filePath, plainText, function(err) {
+			fs.appendFile(tweetFile, plainText, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 			});
 		}
 	});
+	}
+	
+	getCNN();
 }
 
 //-------------------------------------------
@@ -148,19 +185,12 @@ function writeHeadlines2()
 // the array is 1 tweet.
 //-------------------------------------------
 function readHeadlines() {
-	var lineReader1 = require('readline').createInterface({
-		input: require('fs').createReadStream('test.txt')
+	var lineReader = require('readline').createInterface({
+		input: require('fs').createReadStream('tweetFile.txt')
 	});
 
-	lineReader1.on('line', function (line) {
-		headlines.push(line);
-	});
-	
-	var lineReader2 = require('readline').createInterface({
-	input: require('fs').createReadStream('save.txt')
-	});
-
-	lineReader2.on('line', function (line) {
+	lineReader.on('line', function (line) {
+		
 		headlines.push(line);
 	});
 }
@@ -188,7 +218,7 @@ function saveHeadline(plainText) {
 		output: process.stdout
 	});
 	
-	rl.question('Post to Twitter and Save? (1 for Yes, 2 for No)	', 
+	rl.question('\n\nPost to Twitter and Save? (1 for Yes, 2 for No)	', 
 	(answer) => 
 	{
 		// TODO: Log the data in a database
@@ -218,9 +248,9 @@ function postToTwitter(markovHeadline)
 		console.log(data);
 	})
 }
+function run()
+{
+	writeHeadlines();
+}
 
-	deleteFiles();
-	setTimeout(writeHeadlines, 200);
-	setTimeout(writeHeadlines2, 1000)
-	setTimeout(readHeadlines, 3000);
-	setTimeout(markov, 4000);
+run();
